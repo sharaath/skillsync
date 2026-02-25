@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Forgot Password - SkillSync</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Reset Password</h2>
+
+    <form id="resetForm">
+        <input type="email" id="email" placeholder="Enter Your Email" required>
+        <input type="password" id="newPassword" placeholder="Enter New Password" required>
+
+        <button type="submit">Reset Password</button>
+    </form>
+
+    <p class="register-text">
+        <a href="login.html">Back to Login</a>
+    </p>
+</div>
+
+<script>
+document.getElementById("resetForm").addEventListener("submit", async function(e) {
+
+    e.preventDefault();
+
+    const email = document.getElementById("email").value;
+
+    try {
+        const response = await fetch("http://localhost:5000/api/forgot-password", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert("Reset link sent to your email 📩");
+        } else {
+            alert(data.message);
+        }
+
+    } catch (error) {
+        alert("Server error");
+    }
+
+});
+</script>
+
+</body>
+</html>

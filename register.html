@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Register - SkillSync</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Create Account</h2>
+
+    <form id="registerForm">
+        <input type="text" id="name" placeholder="Enter Name" required>
+        <input type="email" id="email" placeholder="Enter Email" required>
+        <input type="password" id="password" placeholder="Enter Password" required>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <p class="register-text">
+        Already have an account?
+        <a href="login.html">Login</a>
+    </p>
+</div>
+
+<script>
+document.getElementById("registerForm").addEventListener("submit", async function(e) {
+
+    e.preventDefault();
+
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    try {
+        const response = await fetch("http://localhost:5000/api/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ name, email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert("Registration Successful ✅");
+            window.location.href = "login.html";
+        } else {
+            alert(data.message);
+        }
+
+    } catch (error) {
+        alert("Server error. Make sure backend is running.");
+    }
+
+});
+</script>
+
+</body>
+</html>

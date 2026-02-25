@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Reports - SkillSync</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+<div class="dashboard">
+
+    <div class="sidebar">
+        <h2>SkillSync</h2>
+        <a href="dashboard.html">Home</a>
+        <a href="mock.html">Mock Interview</a>
+        <a href="reports.html" class="active">Reports</a>
+        <a href="index.html">Logout</a>
+    </div>
+
+    <div class="main-content">
+
+        <h1>Your Performance Report</h1>
+
+        <div class="dashboard-card">
+            <h3>Overall Readiness Score</h3>
+            <p class="big-score" id="finalScore">0%</p>
+        </div>
+
+        <h3 style="margin-top:30px;">Skill Breakdown</h3>
+
+        <div class="progress-section">
+
+            <div class="progress-item">
+                <span>Communication</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="commBar"></div>
+                </div>
+            </div>
+
+            <div class="progress-item">
+                <span>Confidence</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="confBar"></div>
+                </div>
+            </div>
+
+            <div class="progress-item">
+                <span>Technical</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="techBar"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div style="margin-top:30px;">
+            <h3>Feedback</h3>
+            <p id="feedbackText"></p>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    var score = localStorage.getItem("readinessScore");
+
+    // 🔴 If no interview taken
+    if (score === null || parseInt(score) === 0) {
+
+
+        document.querySelector(".main-content").innerHTML = `
+            <div style="text-align:center; margin-top:100px;">
+                <h2>No Report Found</h2>
+                <p>Please complete a mock interview to view your performance report.</p>
+                <button onclick="goToMock()" 
+                        style="padding:10px 20px; background:#2b3f8f; color:white; border:none; border-radius:5px; cursor:pointer;">
+                    Go to Mock Interview Practice
+                </button>
+            </div>
+        `;
+
+        return; // stop further execution
+    }
+
+    // ✅ If interview exists
+    score = parseInt(score);
+
+    document.getElementById("finalScore").innerText = score + "%";
+
+    // Skill split logic
+    var comm = Math.round(score * 0.4);
+    var conf = Math.round(score * 0.3);
+    var tech = Math.round(score * 0.3);
+
+    document.getElementById("commBar").style.width = comm + "%";
+    document.getElementById("confBar").style.width = conf + "%";
+    document.getElementById("techBar").style.width = tech + "%";
+
+    var feedback = "";
+
+    if (score < 40) {
+        feedback = "You need significant improvement. Focus on structured answers and technical clarity.";
+    } 
+    else if (score < 70) {
+        feedback = "Good performance. Improve confidence and add more detailed examples.";
+    } 
+    else {
+        feedback = "Excellent performance! You are industry ready.";
+    }
+
+    document.getElementById("feedbackText").innerText = feedback;
+
+});
+
+// 🔹 Go to mock page
+function goToMock() {
+    window.location.href = "mock.html";
+}
+
+</script>
+

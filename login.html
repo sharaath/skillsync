@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Login - SkillSync</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Login to SkillSync</h2>
+
+    <form id="loginForm">
+        <form id="loginForm">
+
+    <input type="email" id="email" placeholder="Enter Email" required>
+
+    <input type="password" id="password" placeholder="Enter Password" required>
+
+    <p style="text-align:right; margin:5px 0;">
+        <a href="forgot.html" style="font-size:14px;">Forgot Password?</a>
+    </p>
+
+    <button type="submit">Login</button>
+
+</form>
+
+
+    </form>
+
+    <p class="register-text">
+        Don't have an account?
+        <a href="register.html">Register</a>
+    </p>
+
+</div>
+
+<script>
+document.getElementById("loginForm").addEventListener("submit", async function(e) {
+
+    e.preventDefault();
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    try {
+        const response = await fetch("http://localhost:5000/api/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            // Save student name in localStorage
+            localStorage.setItem("studentName", data.name);
+
+            alert("Login Successful ✅");
+
+            window.location.href = "dashboard.html";
+        } else {
+            alert(data.message);
+        }
+
+    } catch (error) {
+        alert("Server error. Make sure backend is running.");
+    }
+
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reset Password</title>
+</head>
+<body>
+
+<h2>Reset Password</h2>
+
+<input type="password" id="newPassword" placeholder="Enter new password" required>
+<button onclick="resetPassword()">Reset</button>
+
+<script>
+function resetPassword() {
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("token");
+    const newPassword = document.getElementById("newPassword").value;
+
+    // 🔴 Check if token exists
+    if (!token) {
+        alert("Invalid reset link. Token missing.");
+        return;
+    }
+
+    // 🔴 Check if password entered
+    if (!newPassword) {
+        alert("Please enter a new password.");
+        return;
+    }
+
+    fetch("http://localhost:5000/api/reset-password", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            token: token,
+            newPassword: newPassword
+        })
+    })
+    .then(async (res) => {
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data.message || "Reset failed");
+        }
+
+        return data;
+    })
+    .then(data => {
+        alert("Password reset successful ✅");
+        
+        // Redirect to login page after success
+        window.location.href = "login.html";
+    })
+    .catch(err => {
+        console.error("Reset Error:", err.message);
+        alert(err.message);
+    });
+}
+</script>
+
+</body>
+</html>

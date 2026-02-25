@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Mock Interview - SkillSync</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>SkillSync</h2>
+        <a href="dashboard.html">Home</a>
+        <a href="mock.html" class="active">Mock Interview</a>
+        <a href="reports.html">Reports</a>
+        <a href="index.html">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+        <div class="dashboard-card" style="max-width:600px; margin:auto;">
+            <h2 style="text-align:center;">Mock Interview</h2>
+
+            <p id="progressText" class="progress-text"></p>
+            <p id="questionText" class="question-text"></p>
+
+            <textarea id="answer" rows="6" class="answer-box"></textarea>
+
+            <div class="button-group">
+                <button class="next-btn" type="button" onclick="nextQuestion()">Next</button>
+                <button class="quit-btn" type="button" onclick="quitInterview()">Quit Interview</button>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+// ================= QUESTIONS =================
+var questions = [
+    { text: "Tell me about yourself.", keywords: ["engineering","student","skills","project","experience"] },
+    { text: "Why should we hire you?", keywords: ["skills","value","company","team","contribute"] },
+    { text: "What are your strengths?", keywords: ["strength","skill","communication","leadership","problem"] },
+    { text: "What is your biggest weakness?", keywords: ["weakness","improve","learning","develop"] },
+    { text: "Describe a challenging project you worked on.", keywords: ["project","challenge","solution","result","team"] },
+    { text: "Explain a situation where you solved a difficult problem.", keywords: ["problem","solution","analysis","approach","result"] },
+    { text: "How do you handle pressure or deadlines?", keywords: ["pressure","deadline","manage","plan","prioritize"] },
+    { text: "Tell me about a time you worked in a team.", keywords: ["team","collaboration","communication","role"] },
+    { text: "Describe a conflict in your team and how you handled it.", keywords: ["conflict","discussion","resolve","team","solution"] },
+    { text: "What motivates you?", keywords: ["goal","growth","learning","challenge"] },
+    { text: "Where do you see yourself in 5 years?", keywords: ["career","growth","learn","experience","future"] },
+    { text: "Why do you want to work in this company?", keywords: ["company","culture","growth","skills","opportunity"] },
+    { text: "Explain one technical project you built.", keywords: ["project","technology","implementation","challenge","result"] },
+    { text: "What is OOPS? Explain its principles.", keywords: ["encapsulation","inheritance","polymorphism","abstraction"] },
+    { text: "What is the difference between stack and queue?", keywords: ["stack","queue","lifo","fifo"] },
+    { text: "What is normalization in DBMS?", keywords: ["database","redundancy","dependency","table"] },
+    { text: "What is Git and why do we use it?", keywords: ["version","control","repository","commit"] }
+];
+
+// ================= VARIABLES =================
+var currentQuestion = 0;
+var totalScore = 0;
+var answeredQuestions = 0;
+
+// ================= LOAD QUESTION =================
+function loadQuestion() {
+    document.getElementById("questionText").innerText = questions[currentQuestion].text;
+    document.getElementById("progressText").innerText =
+        "Question " + (currentQuestion + 1) + " of " + questions.length;
+}
+
+document.addEventListener("DOMContentLoaded", loadQuestion);
+
+// ================= NEXT FUNCTION =================
+function nextQuestion() {
+
+    var answer = document.getElementById("answer").value.trim().toLowerCase();
+
+    if (answer.length < 15) {
+        alert("Please provide a more detailed answer.");
+        return;
+    }
+
+    var score = 0;
+
+    var wordCount = answer.split(/\s+/).length;
+    if (wordCount >= 25) score += 40;
+    else if (wordCount >= 15) score += 25;
+
+    var keywords = questions[currentQuestion].keywords;
+    var keywordMatches = 0;
+
+    for (var i = 0; i < keywords.length; i++) {
+        if (answer.includes(keywords[i])) {
+            keywordMatches++;
+        }
+    }
+
+    score += keywordMatches * 12;
+
+    if (score > 100) score = 100;
+
+    totalScore += score;
+    answeredQuestions++;
+
+    document.getElementById("answer").value = "";
+    currentQuestion++;
+
+    if (currentQuestion < questions.length) {
+        loadQuestion();
+    } else {
+        finishInterview();
+    }
+}
+
+// ================= QUIT FUNCTION =================
+function quitInterview() {
+
+    if (answeredQuestions === 0) {
+        alert("You haven't answered any questions yet.");
+        return;
+    }
+
+    var confirmQuit = confirm("Are you sure you want to quit the interview?");
+
+    if (confirmQuit) {
+        finishInterview();
+    }
+}
+
+// ================= FINISH FUNCTION =================
+function finishInterview() {
+
+    var finalScore = Math.round(totalScore / answeredQuestions);
+
+    localStorage.setItem("readinessScore", finalScore);
+
+    alert("Interview Completed! Your Final Score: " + finalScore + "%");
+
+    window.location.href = "dashboard.html";
+}
+
+</script>
+
+</body>
+</html>

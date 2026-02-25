@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - SkillSync</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>SkillSync</h2>
+        <a href="dashboard.html" class="active">Home</a>
+        <a href="mock.html">Mock Interview</a>
+        <a href="reports.html">Reports</a>
+        <a href="index.html">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+        <div class="top-bar">
+            <h1 id="welcomeText">Welcome 👋</h1>
+            <p>Track your industry readiness and improve your skills</p>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats-container">
+
+            <div class="stat-card">
+                <h4>Industry Readiness</h4>
+                <div class="stat-value" id="scoreDisplay">0%</div>
+            </div>
+
+            <div class="stat-card">
+                <h4>Mock Attempts</h4>
+                <div class="stat-value">1</div>
+            </div>
+
+            <div class="stat-card">
+                <h4>Performance Level</h4>
+                <div class="stat-value" id="levelDisplay">Beginner</div>
+            </div>
+
+        </div>
+
+        <!-- Skills Section -->
+        <div class="skills-section">
+            <h3>Your Skills Overview</h3>
+
+            <div class="skill">
+                <span>Communication</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="commBar"></div>
+                </div>
+            </div>
+
+            <div class="skill">
+                <span>Confidence</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="confBar"></div>
+                </div>
+            </div>
+
+            <div class="skill">
+                <span>Problem Solving</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="problemBar"></div>
+                </div>
+            </div>
+
+            <div class="skill">
+                <span>Teamwork</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="teamBar"></div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    // ================= GET STUDENT NAME =================
+    var studentName = localStorage.getItem("studentName");
+
+    if (!studentName) {
+        studentName = "Student";
+    }
+
+    document.getElementById("welcomeText").innerText =
+        "Welcome, " + studentName + " 👋";
+
+
+    // ================= GET READINESS SCORE =================
+    var score = localStorage.getItem("readinessScore");
+
+    if (!score) {
+        score = 0;
+    } else {
+        score = parseInt(score);
+    }
+
+    document.getElementById("scoreDisplay").innerText = score + "%";
+
+
+    // ================= SET PERFORMANCE LEVEL =================
+    var level = "Beginner";
+
+    if (score >= 70) {
+        level = "Advanced";
+    } 
+    else if (score >= 40) {
+        level = "Intermediate";
+    }
+
+    document.getElementById("levelDisplay").innerText = level;
+
+
+    // ================= SKILL BREAKDOWN =================
+    var comm = Math.round(score * 0.4);
+    var conf = Math.round(score * 0.3);
+    var problem = Math.round(score * 0.2);
+    var team = Math.round(score * 0.1);
+
+    document.getElementById("commBar").style.width = comm + "%";
+    document.getElementById("confBar").style.width = conf + "%";
+    document.getElementById("problemBar").style.width = problem + "%";
+    document.getElementById("teamBar").style.width = team + "%";
+
+});
+
+</script>
+
+
+</body>
+</html>
