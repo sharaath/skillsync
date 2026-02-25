@@ -7,19 +7,25 @@ const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
+const path = require("path");
 const User = require("./models/User");
 
 const app = express();
 
+// ================= MIDDLEWARE =================
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve frontend files from public folder
+app.use(express.static(path.join(__dirname, "public")));
 
 // ================= MONGODB CONNECTION =================
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected ✅"))
   .catch(err => console.log("MongoDB Connection Error ❌", err));
 
+// ================= ROOT ROUTE =================
 app.get("/", (req, res) => {
   res.send("SkillSync Backend Running 🚀");
 });
@@ -101,10 +107,9 @@ app.post("/api/forgot-password", async (req, res) => {
     const resetToken = crypto.randomBytes(32).toString("hex");
 
     user.resetToken = resetToken;
-    user.tokenExpiry = Date.now() + 15 * 60 * 1000; // 15 minutes
+    user.tokenExpiry = Date.now() + 15 * 60 * 1000; // 15 min
     await user.save();
 
-    // Use BASE_URL for dynamic environment (local / render)
     const resetLink = `${process.env.BASE_URL}/reset.html?token=${resetToken}`;
 
     await transporter.sendMail({
@@ -113,8 +118,8 @@ app.post("/api/forgot-password", async (req, res) => {
       subject: "SkillSync Password Reset",
       html: `
         <h3>Password Reset Request</h3>
-        <p>Click below link to reset your password:</p>
-        <a href="${resetLink}">Reset Password</a>
+        <p>Click the link below to reset your password:</p>
+        <a href="${resetLink}">${resetLink}</a>
         <p>This link expires in 15 minutes.</p>
       `
     });
@@ -155,6 +160,12 @@ app.post("/api/reset-password", async (req, res) => {
     console.log("RESET ERROR 👉", error);
     res.status(500).json({ message: "Server error" });
   }
+});
+
+// ================= FALLBACK ROUTE =================
+// If route not found, serve index.html (optional)
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // ================= START SERVER =================
