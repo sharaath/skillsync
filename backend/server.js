@@ -1,3 +1,6 @@
+// ================= IMPORTS =================
+require("dotenv").config();
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -10,19 +13,16 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-
+app.use(express.urlencoded({ extended: true }));
 
 // ================= MONGODB CONNECTION =================
-mongoose.connect(
-  "mongodb+srv://skillsync:skillsync123@cluster0.lsa4hze.mongodb.net/skillsync?retryWrites=true&w=majority"
-)
-.then(() => console.log("MongoDB Connected ✅"))
-.catch(err => console.log("MongoDB Connection Error ❌", err));
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB Connected ✅"))
+  .catch(err => console.log("MongoDB Connection Error ❌", err));
 
 app.get("/", (req, res) => {
   res.send("SkillSync Backend Running 🚀");
 });
-
 
 // ================= REGISTER =================
 app.post("/api/register", async (req, res) => {
@@ -52,7 +52,6 @@ app.post("/api/register", async (req, res) => {
   }
 });
 
-
 // ================= LOGIN =================
 app.post("/api/login", async (req, res) => {
   try {
@@ -79,16 +78,14 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-
 // ================= EMAIL TRANSPORTER =================
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "sharathachar33@gmail.com",
-    pass: "qjjv dnnp rvzs xrvl"   // 🔥 Replace with Gmail App Password
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   }
 });
-
 
 // ================= FORGOT PASSWORD =================
 app.post("/api/forgot-password", async (req, res) => {
@@ -107,10 +104,11 @@ app.post("/api/forgot-password", async (req, res) => {
     user.tokenExpiry = Date.now() + 15 * 60 * 1000; // 15 minutes
     await user.save();
 
-    const resetLink = `https://abcd1234.ngrok-free.app/reset.html?token=${resetToken}`;
+    // Use BASE_URL for dynamic environment (local / render)
+    const resetLink = `${process.env.BASE_URL}/reset.html?token=${resetToken}`;
 
     await transporter.sendMail({
-      from: "skillsyncproject@gmail.com",
+      from: process.env.EMAIL_USER,
       to: email,
       subject: "SkillSync Password Reset",
       html: `
@@ -124,28 +122,20 @@ app.post("/api/forgot-password", async (req, res) => {
     res.json({ message: "Reset link sent to email" });
 
   } catch (error) {
-    console.log("FORGOT PASSWORD route hit!");
+    console.log("FORGOT PASSWORD ERROR 👉", error);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-
 // ================= RESET PASSWORD =================
 app.post("/api/reset-password", async (req, res) => {
   try {
-    console.log("Incoming body 👉", req.body);
-
     const { token, newPassword } = req.body;
-
-    console.log("Token received 👉", token);
-    console.log("Password received 👉", newPassword);
 
     const user = await User.findOne({
       resetToken: token,
       tokenExpiry: { $gt: Date.now() }
     });
-
-    console.log("User found 👉", user);
 
     if (!user) {
       return res.status(400).json({ message: "Invalid or expired token" });
@@ -167,9 +157,9 @@ app.post("/api/reset-password", async (req, res) => {
   }
 });
 
-
 // ================= START SERVER =================
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
